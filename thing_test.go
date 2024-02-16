@@ -24,22 +24,22 @@ func TestNew(t *testing.T) {
 		input    rid
 		expected *Thing
 	}{
-		{"Text ID", rid{"person", "tobie"}, &Thing{"person", &Id{"tobie", false}}},
+		{"Text ID", rid{"person", "tobie"}, &Thing{"person", &Id{"tobie"}}},
 		{
 			"Complex Text ID",
 			rid{"entry", "⟨8424486b-85b3-4448-ac8d-5d51083391c7⟩"},
-			&Thing{"entry", &Id{_uuid, true}},
+			&Thing{"entry", &Id{_uuid}},
 		},
-		{"Numeric ID", rid{"entry", "1337"}, &Thing{"entry", &Id{int64(1337), false}}},
+		{"Numeric ID", rid{"entry", "1337"}, &Thing{"entry", &Id{int64(1337)}}},
 		{
 			"Array ID",
 			rid{"entry", fmt.Sprintf("['London', '%s']", now)},
-			&Thing{"entry", &Id{ArrayId{"London", date}, true}},
+			&Thing{"entry", &Id{ArrayId{"London", date}}},
 		},
 		{
 			"Object ID",
 			rid{"entry", fmt.Sprintf("{ location: 'London', date: '%s' }", now)},
-			&Thing{"entry", &Id{ObjectId{"location": "London", "date": date}, true}},
+			&Thing{"entry", &Id{ObjectId{"location": "London", "date": date}}},
 		},
 	}
 
@@ -62,22 +62,22 @@ func TestParse(t *testing.T) {
 		input    string
 		expected *Thing
 	}{
-		{"Text ID", "person:tobie", &Thing{"person", &Id{"tobie", false}}},
+		{"Text ID", "person:tobie", &Thing{"person", &Id{"tobie"}}},
 		{
 			"Complex Text ID",
 			"entry:⟨8424486b-85b3-4448-ac8d-5d51083391c7⟩",
-			&Thing{"entry", &Id{_uuid, true}},
+			&Thing{"entry", &Id{_uuid}},
 		},
-		{"Numeric ID", "entry:1337", &Thing{"entry", &Id{int64(1337), false}}},
+		{"Numeric ID", "entry:1337", &Thing{"entry", &Id{int64(1337)}}},
 		{
 			"Array ID",
 			fmt.Sprintf("entry:['London', '%s']", now),
-			&Thing{"entry", &Id{ArrayId{"London", date}, true}},
+			&Thing{"entry", &Id{ArrayId{"London", date}}},
 		},
 		{
 			"Object ID",
 			fmt.Sprintf("entry:{ location: 'London', date: '%s' }", now),
-			&Thing{"entry", &Id{ObjectId{"location": "London", "date": date}, true}},
+			&Thing{"entry", &Id{ObjectId{"location": "London", "date": date}}},
 		},
 	}
 
@@ -100,21 +100,21 @@ func TestString(t *testing.T) {
 		input    *Thing
 		expected string
 	}{
-		{"Text ID", &Thing{"person", &Id{"tobie", false}}, "person:tobie"},
+		{"Text ID", &Thing{"person", &Id{"tobie"}}, "person:tobie"},
 		{
 			"Complex Text ID",
-			&Thing{"entry", &Id{_uuid, true}},
+			&Thing{"entry", &Id{_uuid}},
 			"entry:⟨8424486b-85b3-4448-ac8d-5d51083391c7⟩",
 		},
-		{"Numeric ID", &Thing{"entry", &Id{int64(1337), false}}, "entry:1337"},
+		{"Numeric ID", &Thing{"entry", &Id{int64(1337)}}, "entry:1337"},
 		{
 			"Array ID",
-			&Thing{"entry", &Id{ArrayId{"London", date}, true}},
+			&Thing{"entry", &Id{ArrayId{"London", date}}},
 			fmt.Sprintf("entry:['London', '%s']", now),
 		},
 		{
 			"Object ID",
-			&Thing{"entry", &Id{ObjectId{"location": "London", "date": date}, true}},
+			&Thing{"entry", &Id{ObjectId{"location": "London", "date": date}}},
 			fmt.Sprintf("entry:{location: 'London', date: '%s'}", now),
 		},
 	}

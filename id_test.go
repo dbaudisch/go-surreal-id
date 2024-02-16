@@ -19,22 +19,22 @@ func TestParseId(t *testing.T) {
 		input    string
 		expected *Id
 	}{
-		{"Text ID", "tobie", &Id{"tobie", false}},
+		{"Text ID", "tobie", &Id{"tobie"}},
 		{
 			"Complex Text ID",
 			"⟨8424486b-85b3-4448-ac8d-5d51083391c7⟩",
-			&Id{_uuid, true},
+			&Id{_uuid},
 		},
-		{"Numeric ID", "1337", &Id{int64(1337), false}},
+		{"Numeric ID", "1337", &Id{int64(1337)}},
 		{
 			"Array ID",
 			fmt.Sprintf("[ 'London', '%s' ]", now),
-			&Id{ArrayId{"London", date}, true},
+			&Id{ArrayId{"London", date}},
 		},
 		{
 			"Object ID",
 			fmt.Sprintf("{ location: 'London', date: '%s' }", now),
-			&Id{ObjectId{"location": "London", "date": date}, true},
+			&Id{ObjectId{"location": "London", "date": date}},
 		},
 	}
 
@@ -57,21 +57,21 @@ func TestStringId(t *testing.T) {
 		input    *Id
 		expected string
 	}{
-		{"Text ID", &Id{"tobie", false}, "tobie"},
+		{"Text ID", &Id{"tobie"}, "tobie"},
 		{
 			"Complex Text ID",
-			&Id{_uuid, true},
+			&Id{_uuid},
 			"⟨8424486b-85b3-4448-ac8d-5d51083391c7⟩",
 		},
-		{"Numeric ID", &Id{int64(1337), false}, "1337"},
+		{"Numeric ID", &Id{int64(1337)}, "1337"},
 		{
 			"Array ID",
-			&Id{ArrayId{"London", date}, true},
+			&Id{ArrayId{"London", date}},
 			fmt.Sprintf("['London', '%s']", now),
 		},
 		{
 			"Object ID",
-			&Id{ObjectId{"location": "London", "date": date}, true},
+			&Id{ObjectId{"location": "London", "date": date}},
 			fmt.Sprintf("{location: 'London', date: '%s'}", now),
 		},
 	}

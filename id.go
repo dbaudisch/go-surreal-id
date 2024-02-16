@@ -40,8 +40,7 @@ type (
 )
 
 type Id struct {
-	val   any
-	cmplx bool
+	Val any
 }
 
 var ISO8601RegEx = regexp.MustCompile(`^\d{4}-(?:0[1-9]|1[0-2])-(?:[0-2][1-9]|[1-3]0|3[01])T(?:[0-1][0-9]|2[0-3])(?::[0-6]\d)(?::[0-6]\d)?(?:\.\d{3})?(?:[+-][0-2]\d:[0-5]\d|Z)?`)
@@ -50,16 +49,16 @@ func ParseId(id string) *Id {
 	switch true {
 	case isNumeric(id):
 		n, _ := strconv.ParseInt(id, 10, 64)
-		return &Id{n, false}
+		return &Id{n}
 	case strings.HasPrefix(id, "{") && strings.HasSuffix(id, "}"):
-		return &Id{parseObjectId(id), true}
+		return &Id{parseObjectId(id)}
 	case strings.HasPrefix(id, "[") && strings.HasSuffix(id, "]"):
-		return &Id{parseArrayId(id), true}
+		return &Id{parseArrayId(id)}
 	case strings.HasPrefix(id, "⟨") && strings.HasSuffix(id, "⟩"):
 		_uuid, _ := uuid.FromString(strings.Trim(id, "⟨⟩"))
-		return &Id{_uuid, true}
+		return &Id{_uuid}
 	default:
-		return &Id{id, false}
+		return &Id{id}
 	}
 }
 
@@ -110,39 +109,37 @@ func parseObjectId(s string) ObjectId {
 	return res
 }
 
-func (id Id) String() string {
-	if !id.cmplx {
-		return fmt.Sprint(id.val)
+func (ai ArrayId) String() string {
+	res := make([]string, len(ai))
+	for i, v := range ai {
+		switch x := v.(type) {
+		case time.Time:
+			res[i] = x.Format(time.RFC3339Nano)
+		default:
+			res[i] = x.(string)
+		}
 	}
+	return fmt.Sprintf("['%s']", strings.Join(res, "', '"))
+}
 
-	switch val := id.val.(type) {
-	case ArrayId:
-		res := make([]string, len(val))
-
-		for i, v := range val {
-			switch x := v.(type) {
-			case time.Time:
-				res[i] = x.Format(time.RFC3339Nano)
-			default:
-				res[i] = fmt.Sprint(x)
-			}
+func (oi ObjectId) String() string {
+	var res []string
+	for k, v := range oi {
+		switch x := v.(type) {
+		case time.Time:
+			res = append(res, fmt.Sprintf("%s: '%v'", k, x.Format(time.RFC3339Nano)))
+		default:
+			res = append(res, fmt.Sprintf("%s: '%v'", k, v))
 		}
+	}
+	return fmt.Sprintf("{%s}", strings.Join(res, ", "))
+}
 
-		return fmt.Sprintf("['%s']", strings.Join(res, "', '"))
-	case ObjectId:
-		var res []string
-		for k, v := range id.val.(ObjectId) {
-			switch x := v.(type) {
-			case time.Time:
-				res = append(res, fmt.Sprintf("%s: '%v'", k, x.Format(time.RFC3339Nano)))
-			default:
-				res = append(res, fmt.Sprintf("%s: '%v'", k, v))
-			}
-		}
-		return fmt.Sprintf("{%s}", strings.Join(res, ", "))
+func (id Id) String() string {
+	switch id.Val.(type) {
 	case uuid.UUID:
-		return fmt.Sprintf("⟨%s⟩", id.val.(uuid.UUID).String())
+		return fmt.Sprintf("⟨%s⟩", id.Val.(uuid.UUID).String())
 	default:
-		return fmt.Sprint(id.val)
+		return fmt.Sprint(id.Val)
 	}
 }
