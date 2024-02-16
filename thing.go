@@ -6,8 +6,8 @@ import (
 )
 
 type Thing struct {
-	table string
-	id    *Id
+	Table string
+	Id    *Id
 }
 
 func New(tb, id string) *Thing {
@@ -20,13 +20,13 @@ func Parse(s string) *Thing {
 }
 
 func (t *Thing) String() string {
-	return fmt.Sprintf("%s:%v", t.table, t.id)
+	return fmt.Sprintf("%s:%v", t.Table, t.Id)
 }
 
 func (t *Thing) UnmarshalJSON(data []byte) error {
 	rid := Parse(strings.Trim(string(data), "\""))
-	t.table = rid.table
-	t.id = rid.id
+	t.Table = rid.Table
+	t.Id = rid.Id
 
 	return nil
 }
