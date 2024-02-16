@@ -5,11 +5,14 @@ import (
 	"reflect"
 	"testing"
 	"time"
+
+	"github.com/gofrs/uuid/v5"
 )
 
 func TestParse(t *testing.T) {
 	now := "2024-02-16T00:18:48.084Z"
 	date, _ := time.Parse(time.RFC3339, now)
+	_uuid, _ := uuid.FromString("8424486b-85b3-4448-ac8d-5d51083391c7")
 
 	tests := []struct {
 		name     string
@@ -20,7 +23,7 @@ func TestParse(t *testing.T) {
 		{
 			"Complex Text ID",
 			"entry:⟨8424486b-85b3-4448-ac8d-5d51083391c7⟩",
-			&Thing{"entry", &Id{"8424486b-85b3-4448-ac8d-5d51083391c7", true}},
+			&Thing{"entry", &Id{_uuid, true}},
 		},
 		{"Numeric ID", "entry:1337", &Thing{"entry", &Id{int64(1337), false}}},
 		{
@@ -47,6 +50,7 @@ func TestParse(t *testing.T) {
 func TestString(t *testing.T) {
 	now := "2024-02-16T00:18:48.084Z"
 	date, _ := time.Parse(time.RFC3339, now)
+	_uuid, _ := uuid.FromString("8424486b-85b3-4448-ac8d-5d51083391c7")
 
 	tests := []struct {
 		name     string
@@ -56,7 +60,7 @@ func TestString(t *testing.T) {
 		{"Text ID", &Thing{"person", &Id{"tobie", false}}, "person:tobie"},
 		{
 			"Complex Text ID",
-			&Thing{"entry", &Id{"8424486b-85b3-4448-ac8d-5d51083391c7", true}},
+			&Thing{"entry", &Id{_uuid, true}},
 			"entry:⟨8424486b-85b3-4448-ac8d-5d51083391c7⟩",
 		},
 		{"Numeric ID", &Thing{"entry", &Id{int64(1337), false}}, "entry:1337"},

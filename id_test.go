@@ -5,11 +5,14 @@ import (
 	"reflect"
 	"testing"
 	"time"
+
+	"github.com/gofrs/uuid/v5"
 )
 
 func TestParseId(t *testing.T) {
 	now := "2024-02-16T00:18:48.084Z"
 	date, _ := time.Parse(time.RFC3339, now)
+	_uuid, _ := uuid.FromString("8424486b-85b3-4448-ac8d-5d51083391c7")
 
 	tests := []struct {
 		name     string
@@ -20,7 +23,7 @@ func TestParseId(t *testing.T) {
 		{
 			"Complex Text ID",
 			"⟨8424486b-85b3-4448-ac8d-5d51083391c7⟩",
-			&Id{"8424486b-85b3-4448-ac8d-5d51083391c7", true},
+			&Id{_uuid, true},
 		},
 		{"Numeric ID", "1337", &Id{int64(1337), false}},
 		{
@@ -47,6 +50,7 @@ func TestParseId(t *testing.T) {
 func TestStringId(t *testing.T) {
 	now := "2024-02-16T00:18:48.084Z"
 	date, _ := time.Parse(time.RFC3339, now)
+	_uuid, _ := uuid.FromString("8424486b-85b3-4448-ac8d-5d51083391c7")
 
 	tests := []struct {
 		name     string
@@ -56,7 +60,7 @@ func TestStringId(t *testing.T) {
 		{"Text ID", &Id{"tobie", false}, "tobie"},
 		{
 			"Complex Text ID",
-			&Id{"8424486b-85b3-4448-ac8d-5d51083391c7", true},
+			&Id{_uuid, true},
 			"⟨8424486b-85b3-4448-ac8d-5d51083391c7⟩",
 		},
 		{"Numeric ID", &Id{int64(1337), false}, "1337"},
@@ -71,6 +75,7 @@ func TestStringId(t *testing.T) {
 			fmt.Sprintf("{location: 'London', date: '%s'}", now),
 		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.input.String(); got != tt.expected {

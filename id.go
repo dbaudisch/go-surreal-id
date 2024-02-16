@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/gofrs/uuid/v5"
 )
 
 /*
@@ -56,7 +58,8 @@ func ParseId(id string) *Id {
 	default:
 		switch true {
 		case strings.HasPrefix(id, "⟨") && strings.HasSuffix(id, "⟩"):
-			return &Id{strings.Trim(id, "⟨⟩"), true}
+			_uuid, _ := uuid.FromString(strings.Trim(id, "⟨⟩"))
+			return &Id{_uuid, true}
 		default:
 			return &Id{id, false}
 		}
@@ -140,7 +143,9 @@ func (id Id) String() string {
 			}
 		}
 		return fmt.Sprintf("{%s}", strings.Join(res, ", "))
+	case uuid.UUID:
+		return fmt.Sprintf("⟨%s⟩", id.val.(uuid.UUID).String())
 	default:
-		return fmt.Sprintf("⟨%s⟩", id.val)
+		return fmt.Sprint(id.val)
 	}
 }
