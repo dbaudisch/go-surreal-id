@@ -19,13 +19,21 @@ func TestParseId(t *testing.T) {
 		input    string
 		expected *Id
 	}{
-		{"Text ID", "tobie", &Id{"tobie"}},
+		{
+			"Text ID",
+			"tobie",
+			&Id{"tobie"},
+		},
 		{
 			"Complex Text ID",
 			"⟨8424486b-85b3-4448-ac8d-5d51083391c7⟩",
 			&Id{_uuid},
 		},
-		{"Numeric ID", "1337", &Id{int64(1337)}},
+		{
+			"Numeric ID",
+			"1337",
+			&Id{int64(1337)},
+		},
 		{
 			"Array ID",
 			fmt.Sprintf("[ 'London', '%s' ]", now),
@@ -57,13 +65,21 @@ func TestStringId(t *testing.T) {
 		input    *Id
 		expected string
 	}{
-		{"Text ID", &Id{"tobie"}, "tobie"},
+		{
+			"Text ID",
+			&Id{"tobie"},
+			"tobie",
+		},
 		{
 			"Complex Text ID",
 			&Id{_uuid},
 			"⟨8424486b-85b3-4448-ac8d-5d51083391c7⟩",
 		},
-		{"Numeric ID", &Id{int64(1337)}, "1337"},
+		{
+			"Numeric ID",
+			&Id{int64(1337)},
+			"1337",
+		},
 		{
 			"Array ID",
 			&Id{ArrayId{"London", date}},

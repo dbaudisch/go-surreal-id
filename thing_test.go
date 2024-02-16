@@ -14,38 +14,41 @@ func TestNew(t *testing.T) {
 	date, _ := time.Parse(time.RFC3339, now)
 	_uuid, _ := uuid.FromString("8424486b-85b3-4448-ac8d-5d51083391c7")
 
-	type rid struct {
-		tb string
-		id string
-	}
-
 	tests := []struct {
 		name     string
-		input    rid
+		input    []string
 		expected *Thing
 	}{
-		{"Text ID", rid{"person", "tobie"}, &Thing{"person", &Id{"tobie"}}},
+		{
+			"Text ID",
+			[]string{"person", "tobie"},
+			&Thing{"person", &Id{"tobie"}},
+		},
 		{
 			"Complex Text ID",
-			rid{"entry", "⟨8424486b-85b3-4448-ac8d-5d51083391c7⟩"},
+			[]string{"entry", "⟨8424486b-85b3-4448-ac8d-5d51083391c7⟩"},
 			&Thing{"entry", &Id{_uuid}},
 		},
-		{"Numeric ID", rid{"entry", "1337"}, &Thing{"entry", &Id{int64(1337)}}},
+		{
+			"Numeric ID",
+			[]string{"entry", "1337"},
+			&Thing{"entry", &Id{int64(1337)}},
+		},
 		{
 			"Array ID",
-			rid{"entry", fmt.Sprintf("['London', '%s']", now)},
+			[]string{"entry", fmt.Sprintf("['London', '%s']", now)},
 			&Thing{"entry", &Id{ArrayId{"London", date}}},
 		},
 		{
 			"Object ID",
-			rid{"entry", fmt.Sprintf("{ location: 'London', date: '%s' }", now)},
+			[]string{"entry", fmt.Sprintf("{ location: 'London', date: '%s' }", now)},
 			&Thing{"entry", &Id{ObjectId{"location": "London", "date": date}}},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := New(tt.input.tb, tt.input.id); !reflect.DeepEqual(got, tt.expected) {
+			if got := New(tt.input[0], tt.input[1]); !reflect.DeepEqual(got, tt.expected) {
 				t.Errorf("Parse() = %#v, want %#v", got, tt.expected)
 			}
 		})
@@ -62,13 +65,21 @@ func TestParse(t *testing.T) {
 		input    string
 		expected *Thing
 	}{
-		{"Text ID", "person:tobie", &Thing{"person", &Id{"tobie"}}},
+		{
+			"Text ID",
+			"person:tobie",
+			&Thing{"person", &Id{"tobie"}},
+		},
 		{
 			"Complex Text ID",
 			"entry:⟨8424486b-85b3-4448-ac8d-5d51083391c7⟩",
 			&Thing{"entry", &Id{_uuid}},
 		},
-		{"Numeric ID", "entry:1337", &Thing{"entry", &Id{int64(1337)}}},
+		{
+			"Numeric ID",
+			"entry:1337",
+			&Thing{"entry", &Id{int64(1337)}},
+		},
 		{
 			"Array ID",
 			fmt.Sprintf("entry:['London', '%s']", now),
@@ -100,13 +111,21 @@ func TestString(t *testing.T) {
 		input    *Thing
 		expected string
 	}{
-		{"Text ID", &Thing{"person", &Id{"tobie"}}, "person:tobie"},
+		{
+			"Text ID",
+			&Thing{"person", &Id{"tobie"}},
+			"person:tobie",
+		},
 		{
 			"Complex Text ID",
 			&Thing{"entry", &Id{_uuid}},
 			"entry:⟨8424486b-85b3-4448-ac8d-5d51083391c7⟩",
 		},
-		{"Numeric ID", &Thing{"entry", &Id{int64(1337)}}, "entry:1337"},
+		{
+			"Numeric ID",
+			&Thing{"entry", &Id{int64(1337)}},
+			"entry:1337",
+		},
 		{
 			"Array ID",
 			&Thing{"entry", &Id{ArrayId{"London", date}}},
