@@ -46,8 +46,7 @@ func main() {
 
 	user := User{Name: "Tobie", Surname: "Morgan Hitchcock"}
 
-	u, err := db.Create("user", user)
-	res, err := marshal.SmartUnmarshal[User](u, err)
+	res, err := marshal.SmartUnmarshal[User](db.Create("user", user))
 	if err != nil {
 		panic(err)
 	}
