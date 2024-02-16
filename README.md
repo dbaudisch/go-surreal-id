@@ -1,6 +1,6 @@
 # SurrealDB Record ID library
 
-SurrealDB Record ID lib in pure Go
+SurrealDB Record ID lib in pure Go. Use at your own risk!
 
 ## Usage
 
