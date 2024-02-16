@@ -28,6 +28,11 @@ func TestParseId(t *testing.T) {
 			fmt.Sprintf("[ 'London', '%s' ]", now),
 			&Id{ArrayId{"London", date}, true},
 		},
+		{
+			"Object ID",
+			fmt.Sprintf("{ location: 'London', date: '%s' }", now),
+			&Id{ObjectId{"location": "London", "date": date}, true},
+		},
 	}
 
 	for _, tt := range tests {
@@ -59,6 +64,11 @@ func TestStringId(t *testing.T) {
 			"Array ID",
 			&Id{ArrayId{"London", date}, true},
 			fmt.Sprintf("['London', '%s']", now),
+		},
+		{
+			"Object ID",
+			&Id{ObjectId{"location": "London", "date": date}, true},
+			fmt.Sprintf("{location: 'London', date: '%s'}", now),
 		},
 	}
 	for _, tt := range tests {

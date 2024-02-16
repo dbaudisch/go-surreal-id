@@ -42,6 +42,8 @@ type Id struct {
 	cmplx bool
 }
 
+var ISO8601RegEx = regexp.MustCompile(`^\d{4}-(?:0[1-9]|1[0-2])-(?:[0-2][1-9]|[1-3]0|3[01])T(?:[0-1][0-9]|2[0-3])(?::[0-6]\d)(?::[0-6]\d)?(?:\.\d{3})?(?:[+-][0-2]\d:[0-5]\d|Z)?`)
+
 func ParseId(id string) *Id {
 	switch true {
 	case isNumeric(id):
@@ -68,7 +70,6 @@ func isNumeric(s string) bool {
 
 func parseArrayId(s string) ArrayId {
 	p := strings.Split(strings.Trim(s, "[ ]"), ",")
-	ISO8601RegEx := regexp.MustCompile(`^\d{4}-(?:0[1-9]|1[0-2])-(?:[0-2][1-9]|[1-3]0|3[01])T(?:[0-1][0-9]|2[0-3])(?::[0-6]\d)(?::[0-6]\d)?(?:\.\d{3})?(?:[+-][0-2]\d:[0-5]\d|Z)?`)
 
 	res := make(ArrayId, len(p))
 	for i, x := range p {
@@ -86,8 +87,27 @@ func parseArrayId(s string) ArrayId {
 }
 
 func parseObjectId(s string) ObjectId {
-	res := strings.Trim(s, "{ }")
-	return map[string]any{"val": res}
+	res := make(ObjectId)
+	props := strings.Split(strings.Trim(s, "{ }"), ",")
+
+	for _, p := range props {
+		prop := strings.SplitN(p, ":", 2)
+		tmp := make([]any, len(prop))
+
+		for i, x := range prop {
+			tmp[i] = strings.TrimSpace(x)
+		}
+
+		tmp[1] = strings.Trim(fmt.Sprint(tmp[1]), "'")
+
+		if ISO8601RegEx.MatchString(fmt.Sprint(tmp[1])) {
+			tmp[1], _ = time.Parse(time.RFC3339, fmt.Sprint(tmp[1]))
+		}
+
+		res[fmt.Sprint(tmp[0])] = tmp[1]
+	}
+
+	return res
 }
 
 func (id Id) String() string {
@@ -110,7 +130,16 @@ func (id Id) String() string {
 
 		return fmt.Sprintf("['%s']", strings.Join(res, "', '"))
 	case ObjectId:
-		return fmt.Sprintf("{%s}", id.val)
+		var res []string
+		for k, v := range id.val.(ObjectId) {
+			switch x := v.(type) {
+			case time.Time:
+				res = append(res, fmt.Sprintf("%s: '%v'", k, x.Format(time.RFC3339Nano)))
+			default:
+				res = append(res, fmt.Sprintf("%s: '%v'", k, v))
+			}
+		}
+		return fmt.Sprintf("{%s}", strings.Join(res, ", "))
 	default:
 		return fmt.Sprintf("⟨%s⟩", id.val)
 	}

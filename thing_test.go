@@ -28,6 +28,11 @@ func TestParse(t *testing.T) {
 			fmt.Sprintf("entry:['London', '%s']", now),
 			&Thing{"entry", &Id{ArrayId{"London", date}, true}},
 		},
+		{
+			"Object ID",
+			fmt.Sprintf("entry:{ location: 'London', date: '%s' }", now),
+			&Thing{"entry", &Id{ObjectId{"location": "London", "date": date}, true}},
+		},
 	}
 
 	for _, tt := range tests {
@@ -60,11 +65,11 @@ func TestString(t *testing.T) {
 			&Thing{"entry", &Id{ArrayId{"London", date}, true}},
 			fmt.Sprintf("entry:['London', '%s']", now),
 		},
-		// {
-		// 	"Object ID",
-		// 	&Id{map[string]any{"location": "London", "date": date}, true},
-		// 	fmt.Sprintf("{ location: 'London', date: '%s' }", now),
-		// },
+		{
+			"Object ID",
+			&Thing{"entry", &Id{ObjectId{"location": "London", "date": date}, true}},
+			fmt.Sprintf("entry:{location: 'London', date: '%s'}", now),
+		},
 	}
 
 	for _, tt := range tests {
