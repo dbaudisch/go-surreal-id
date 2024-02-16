@@ -49,20 +49,17 @@ var ISO8601RegEx = regexp.MustCompile(`^\d{4}-(?:0[1-9]|1[0-2])-(?:[0-2][1-9]|[1
 func ParseId(id string) *Id {
 	switch true {
 	case isNumeric(id):
-		num, _ := strconv.ParseInt(id, 10, 64)
-		return &Id{int64(num), false}
+		n, _ := strconv.ParseInt(id, 10, 64)
+		return &Id{n, false}
 	case strings.HasPrefix(id, "{") && strings.HasSuffix(id, "}"):
 		return &Id{parseObjectId(id), true}
 	case strings.HasPrefix(id, "[") && strings.HasSuffix(id, "]"):
 		return &Id{parseArrayId(id), true}
+	case strings.HasPrefix(id, "⟨") && strings.HasSuffix(id, "⟩"):
+		_uuid, _ := uuid.FromString(strings.Trim(id, "⟨⟩"))
+		return &Id{_uuid, true}
 	default:
-		switch true {
-		case strings.HasPrefix(id, "⟨") && strings.HasSuffix(id, "⟩"):
-			_uuid, _ := uuid.FromString(strings.Trim(id, "⟨⟩"))
-			return &Id{_uuid, true}
-		default:
-			return &Id{id, false}
-		}
+		return &Id{id, false}
 	}
 }
 
