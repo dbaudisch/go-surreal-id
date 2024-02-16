@@ -19,6 +19,14 @@ func Parse(s string) *Thing {
 	return &Thing{p[0], ParseId(p[1])}
 }
 
-func (t Thing) String() string {
+func (t *Thing) String() string {
 	return fmt.Sprintf("%s:%v", t.table, t.id)
+}
+
+func (t *Thing) UnmarshalJSON(data []byte) error {
+	rid := Parse(strings.Trim(string(data), "\""))
+	t.table = rid.table
+	t.id = rid.id
+
+	return nil
 }
