@@ -4,7 +4,7 @@ SurrealDB Record ID lib in pure Go.
 
 > [!CAUTION]
 > Use at your own risk!  
-> This library has been created in under 24h, many things such as error handling are non-existant
+> This library has been created in less than 24h, many things such as error handling are non-existant
 
 ## Usage
 
