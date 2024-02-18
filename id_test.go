@@ -30,6 +30,11 @@ func TestParseId(t *testing.T) {
 			&Id{_uuid},
 		},
 		{
+			"Complex Numeric ID",
+			"⟨42⟩",
+			&Id{"42"},
+		},
+		{
 			"Numeric ID",
 			"1337",
 			&Id{int64(1337)},
@@ -74,6 +79,11 @@ func TestStringId(t *testing.T) {
 			"Complex Text ID",
 			&Id{_uuid},
 			"⟨8424486b-85b3-4448-ac8d-5d51083391c7⟩",
+		},
+		{
+			"Complex Numeric ID",
+			&Id{"42"},
+			"⟨42⟩",
 		},
 		{
 			"Numeric ID",

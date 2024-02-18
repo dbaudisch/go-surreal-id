@@ -19,6 +19,7 @@ SurrealDB supports these types for ID
 	Example:
 	-	person:tobie
 	-	article:⟨8424486b-85b3-4448-ac8d-5d51083391c7⟩
+	-	article:⟨10⟩ (CREATE article SET id = "10";)
 
 - Numeric ID
 	Consists of a 64-bit int as ID
@@ -31,7 +32,7 @@ SurrealDB supports these types for ID
 */
 
 type Identifiable interface {
-	string | int64 | ArrayId | ObjectId
+	string | uuid.UUID | int64 | ArrayId | ObjectId
 }
 
 type (
@@ -50,12 +51,18 @@ func ParseId(id string) *Id {
 	case isNumeric(id):
 		n, _ := strconv.ParseInt(id, 10, 64)
 		return &Id{n}
-	case strings.HasPrefix(id, "{") && strings.HasSuffix(id, "}"):
+	case strings.ContainsAny(id, "{}"):
 		return &Id{parseObjectId(id)}
-	case strings.HasPrefix(id, "[") && strings.HasSuffix(id, "]"):
+	case strings.ContainsAny(id, "[]"):
 		return &Id{parseArrayId(id)}
-	case strings.HasPrefix(id, "⟨") && strings.HasSuffix(id, "⟩"):
-		_uuid, _ := uuid.FromString(strings.Trim(id, "⟨⟩"))
+	case strings.ContainsAny(id, "⟨⟩"):
+		trimmed := strings.Trim(id, "⟨⟩")
+
+		if isNumeric(trimmed) {
+			return &Id{trimmed}
+		}
+
+		_uuid, _ := uuid.FromString(trimmed)
 		return &Id{_uuid}
 	default:
 		return &Id{id}
@@ -136,10 +143,16 @@ func (oi ObjectId) String() string {
 }
 
 func (id Id) String() string {
-	switch id.Val.(type) {
+	switch val := id.Val.(type) {
 	case uuid.UUID:
-		return fmt.Sprintf("⟨%s⟩", id.Val.(uuid.UUID).String())
+		return fmt.Sprintf("⟨%s⟩", val.String())
+	case string:
+		if isNumeric(val) {
+			val = fmt.Sprintf("⟨%s⟩", val)
+		}
+
+		return fmt.Sprint(val)
 	default:
-		return fmt.Sprint(id.Val)
+		return fmt.Sprint(val)
 	}
 }

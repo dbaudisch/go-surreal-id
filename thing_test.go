@@ -30,6 +30,11 @@ func TestNew(t *testing.T) {
 			&Thing{"entry", &Id{_uuid}},
 		},
 		{
+			"Complex Numeric ID",
+			[]string{"entry", "⟨42⟩"},
+			&Thing{"entry", &Id{"42"}},
+		},
+		{
 			"Numeric ID",
 			[]string{"entry", "1337"},
 			&Thing{"entry", &Id{int64(1337)}},
@@ -76,6 +81,11 @@ func TestParse(t *testing.T) {
 			&Thing{"entry", &Id{_uuid}},
 		},
 		{
+			"Complex Numeric ID",
+			"entry:⟨42⟩",
+			&Thing{"entry", &Id{"42"}},
+		},
+		{
 			"Numeric ID",
 			"entry:1337",
 			&Thing{"entry", &Id{int64(1337)}},
@@ -120,6 +130,11 @@ func TestString(t *testing.T) {
 			"Complex Text ID",
 			&Thing{"entry", &Id{_uuid}},
 			"entry:⟨8424486b-85b3-4448-ac8d-5d51083391c7⟩",
+		},
+		{
+			"Complex Numeric ID",
+			&Thing{"entry", &Id{"42"}},
+			"entry:⟨42⟩",
 		},
 		{
 			"Numeric ID",
